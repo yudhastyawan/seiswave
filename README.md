@@ -16,6 +16,48 @@
 - **CPS Fortran Integration**: Bypasses slow I/O `subprocess` calls by binding Fortran routines (like `sdisp96`, `sregn96`, `spulse96`) directly to Python memory space using `f2py`.
 - **Interactive Web UI**: A fully-featured modern Streamlit interface seamlessly bundled with the package, eliminating the need to write Python scripts for standard analysis workflows.
 
+## Methodological Details
+
+### 1. Earth Model Parametrization
+To reduce the non-uniqueness of the inversion problem, `seiswave` only requires the user to invert for Layer Thicknesses ($H$) and S-wave velocities ($V_s$). The other dependent parameters are automatically derived using established empirical relationships:
+- **P-wave velocity ($V_p$)**: Computed from S-wave velocity assuming a default Poisson's ratio ($\nu = 0.40$):
+  $$V_p = V_s \sqrt{\frac{2(1-\nu)}{1-2\nu}}$$
+- **Density ($\rho$)**: Computed from P-wave velocity ($V_p$ in km/s) using the **Gardner relation**:
+  $$\rho = 1.74 \times V_p^{0.25} \quad \text{(in g/cm}^3\text{)}$$
+- **Quality Factors**: Assigned default constant attenuation values ($Q_p = 20.0$, $Q_s = 20.0$).
+
+### 2. Inversion Workflow
+The following flowchart illustrates the dispersion inversion process utilizing either the Differential Evolution (DE) or Markov Chain Monte Carlo (MCMC) algorithms:
+
+```mermaid
+graph TD
+    A[Observed Data: E_obs] --> B(Initialize Search Bounds: H & Vs)
+    B --> C{Optimization Method}
+    
+    C -->|Differential Evolution| D[Stochastic Mutation & Crossover]
+    C -->|MCMC| E[Random Walk / Proposal Distribution]
+    
+    D --> F[Generate Candidate 1D Earth Model]
+    E --> F
+    
+    F --> G[Forward Modeling: Generate Synthetic f-c Spectrum]
+    G --> H[Calculate L2 Misfit & Log Posterior]
+    
+    H --> I{Criteria Met / Accepted?}
+    I -- No --> D
+    I -- No --> E
+    
+    I -- Yes --> J[Store Model & Misfit]
+    J --> K{Max Iterations Reached?}
+    
+    K -- Yes --> L((Final Best Model / Posterior Distribution))
+    K -- No --> D
+    K -- No --> E
+
+    classDef method fill:#f9f,stroke:#333,stroke-width:2px;
+    class D,E method;
+```
+
 ## Installation
 
 You can install `seiswave` directly from PyPI.
