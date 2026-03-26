@@ -24,6 +24,9 @@ else
     exit 1
 fi
 
-# 2. Jalankan Streamlit lewat entrypoint package seiswave
+# 2. Set PYTHONPATH agar modul seiswave terbaca tanpa perlu install
+export PYTHONPATH=$PYTHONPATH:.
+
+# 3. Jalankan Streamlit (Mode Testing Langsung)
 echo "🚀 Meluncurkan Aplikasi (Streamlit)..."
-seiswave-web
+streamlit run seiswave/web_app.py

@@ -86,6 +86,29 @@ E_syn, data = generate_synthetic_spectrum(H, Vp, Vs, rho, Qp, Qs, forward_params
 print("Spectrum Matrix Shape:", E_syn.shape)
 ```
 
+#### Example: Real Field Data Processing
+
+```python
+import numpy as np
+import obspy
+from seiswave.dispersion import compute_phase_shift_spectrum
+
+# 1. Load Real Data
+st = obspy.read("data.sgy")
+data = np.array([tr.data for tr in st]).T # Array shape: [npts, ntrcl]
+dt = st[0].stats.delta
+offsets = np.array([tr.stats.distance for tr in st]) / 1000.0 # offsets in km
+
+# 2. Define Phase-Shift Conversion Parameters
+f_min, f_max = 5.0, 40.0
+c_min, c_max = 100.0, 500.0
+dc = 10.0
+
+# 3. Transform to f-c Spectrum matrix (E_obs)
+E_obs = compute_phase_shift_spectrum(data, dt, offsets, c_min, c_max, dc, f_min, f_max)
+print("Observed Spectrum Matrix Shape:", E_obs.shape)
+```
+
 #### Example: Running MCMC Inversion
 
 ```python
