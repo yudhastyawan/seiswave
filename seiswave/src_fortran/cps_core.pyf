@@ -1,0 +1,25 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+python module cps_core ! in
+    interface  ! in :cps_core
+
+        subroutine pysetargs(n, strings) ! in :cps_core:mgtarg_f2py.f
+            integer, intent(in) :: n
+            character*120, dimension(50), intent(in) :: strings
+        end subroutine pysetargs
+
+        subroutine run_sprep96() ! in :cps_core:sprep96.f
+        end subroutine run_sprep96
+
+        subroutine run_sdisp96() ! in :cps_core:sdisp96.f
+        end subroutine run_sdisp96
+
+        subroutine run_sregn96() ! in :cps_core:sregn96.f
+        end subroutine run_sregn96
+
+        subroutine run_spulse96() ! in :cps_core:spulse96.f
+        end subroutine run_spulse96
+
+    end interface
+end python module cps_core

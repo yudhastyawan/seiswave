@@ -1,0 +1,6 @@
+include README.md
+recursive-include seiswave/src_fortran *
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
+recursive-exclude PROGRAMS.330 *
+recursive-exclude venv *

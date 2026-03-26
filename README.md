@@ -1,0 +1,107 @@
+# SeisWave
+
+[![PyPI version](https://badge.fury.io/py/seiswave.svg)](https://badge.fury.io/py/seiswave)
+[![Python Version](https://img.shields.io/pypi/pyversions/seiswave.svg)](https://pypi.org/project/seiswave/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+**SeisWave** is a comprehensive Python framework for seismic surface wave forward modeling and dispersion inversion. It integrates native Python modeling algorithms alongside robust memory-bound Fortran extensions derived from Computer Programs in Seismology (CPS), offering researchers both flexibility and standard-compliant high-performance computations.
+
+## Features
+
+- **Forward Modeling**: Generate synthetic seismograms and $f-c$ phase velocity dispersion images from 1D earth models.
+- **Dispersion Inversion**:
+  - **Differential Evolution (DE)**: Fast global optimization for quick Earth model approximations.
+  - **MCMC Bayesian Inference**: Comprehensive probabilistic inversion outputting Posterior distributions, credible intervals, and full acceptance-rejection & $\hat{R}$ diagnostics.
+- **CPS Fortran Integration**: Bypasses slow I/O `subprocess` calls by binding Fortran routines (like `sdisp96`, `sregn96`, `spulse96`) directly to Python memory space using `f2py`.
+- **Interactive Web UI**: A fully-featured modern Streamlit interface seamlessly bundled with the package, eliminating the need to write Python scripts for standard analysis workflows.
+
+## Installation
+
+You can install `seiswave` directly from PyPI.
+
+```bash
+pip install seiswave
+```
+
+*Note: As this package automatically compiles high-performance Fortran extensions, you will need a Fortran compiler (such as `gfortran`) installed on your system during installation.*
+
+## Usage
+
+### 1. The Interactive Web UI (Recommended)
+
+After installing the package via `pip`, you can instantly launch the interactive web application from your terminal:
+
+```bash
+seiswave-web
+```
+
+This will automatically open the Streamlit interface in your default web browser, giving you access to:
+- 1D Earth Model Builder
+- Forward Modeling (f-c spectra and synthetic seismograms)
+- Dispersion Inversion (DE & MCMC approaches)
+- Real Field Data Processing (`.sgy` / `.segy`)
+- Full graphical diagnostics & CSV downloading capabilities.
+
+### 2. Using the Library in Python Scripts
+
+You can also use `seiswave` as regular Python modules for custom scripting and automation.
+
+#### Example: Running Forward Modeling
+
+```python
+import numpy as np
+from seiswave.earth_model import compute_dependent_params
+from seiswave.synth import generate_synthetic_spectrum
+
+# 1. Define 1D Model Parameters
+H = np.array([5.0]) # Thicknesses (m) [Halfspace excluded]
+Vs = np.array([150.0, 350.0]) # Shear wave velocity (m/s)
+
+# Compute Vp, Density, Qp, Qs via Brocher's empirical relations
+Vp, rho, Qs, Qp = compute_dependent_params(Vs)
+
+# 2. Define Forward Parameters
+forward_params = {
+    'offsets': np.arange(10, 50, 5) / 1000.0, # Offsets in km
+    'dt': 0.002,
+    'npts': 256,
+    'f_min': 5.0, 'f_max': 40.0,
+    'c_min': 100.0, 'c_max': 500.0,
+    'dc': 10.0,
+    'nmodes': 2,
+    'engine': 'cps' # Use 'cps' for Fortran engine or 'pyseissynth' for native experimental engine
+}
+
+# 3. Generate Spectrum & Seismogram
+E_syn, data = generate_synthetic_spectrum(H, Vp, Vs, rho, Qp, Qs, forward_params)
+print("Spectrum Matrix Shape:", E_syn.shape)
+```
+
+#### Example: Running MCMC Inversion
+
+```python
+from seiswave.inversion import run_mcmc_inversion
+
+# Assume E_obs is a pre-calculated or loaded Phase-Velocity / Frequency 2D Matrix
+bounds_H = [(2.0, 10.0)] # Bounds for layer 1 thickness
+bounds_Vs = [(100.0, 200.0), (300.0, 500.0)] # Bounds for Vs1, Vs2
+
+result = run_mcmc_inversion(
+    E_obs=E_obs,
+    num_layers=2,
+    bounds_H=bounds_H,
+    bounds_Vs=bounds_Vs,
+    forward_params=forward_params,
+    n_chains=2,
+    n_samples=200,
+    burn_in=50
+)
+
+print(result.summary())
+```
+
+## Contributing
+Contributions are welcome! Please open an issue or submit a Pull Request on our GitHub repository.
+
+## License
+Provided under the MIT License.

@@ -1,0 +1,27 @@
+# Environments
+venv/
+.env
+env/
+__pycache__/
+*.py[cod]
+
+# PyPI Build artifacts
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+
+# OS Files
+.DS_Store
+
+# Fortran CPS Files
+PROGRAMS.330/
+seiswave/src_fortran/build/
+seiswave/src_fortran/*.so
+seiswave/src_fortran/*.pyd
+seiswave/src_fortran/*.dylib
+
+# IDE
+.vscode/
+.idea/
