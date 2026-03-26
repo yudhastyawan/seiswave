@@ -103,8 +103,7 @@ You can also use `seiswave` as regular Python modules for custom scripting and a
 
 ```python
 import numpy as np
-from seiswave.earth_model import compute_dependent_params
-from seiswave.synth import generate_synthetic_spectrum
+from seiswave.inversion import compute_dependent_params, generate_synthetic_spectrum
 
 # 1. Define 1D Model Parameters
 H = np.array([5.0]) # Thicknesses (m) [Halfspace excluded]
@@ -135,13 +134,13 @@ print("Spectrum Matrix Shape:", E_syn.shape)
 ```python
 import numpy as np
 import obspy
-from seiswave.dispersion import compute_phase_shift_spectrum
+from seiswave.dispersion import calculate_dispersion_image
 
 # 1. Load Real Data
 st = obspy.read("data.sgy")
 data = np.array([tr.data for tr in st]).T # Array shape: [npts, ntrcl]
 dt = st[0].stats.delta
-offsets = np.array([tr.stats.distance for tr in st]) / 1000.0 # offsets in km
+offsets = np.array([tr.stats.distance for tr in st]) # offsets in meters
 
 # 2. Define Phase-Shift Conversion Parameters
 f_min, f_max = 5.0, 40.0
@@ -149,7 +148,8 @@ c_min, c_max = 100.0, 500.0
 dc = 10.0
 
 # 3. Transform to f-c Spectrum matrix (E_obs)
-E_obs = compute_phase_shift_spectrum(data, dt, offsets, c_min, c_max, dc, f_min, f_max)
+fs = 1.0 / dt
+_, _, E_obs = calculate_dispersion_image(data, offsets, fs, c_min, c_max, dc, f_min, f_max)
 print("Observed Spectrum Matrix Shape:", E_obs.shape)
 ```
 
