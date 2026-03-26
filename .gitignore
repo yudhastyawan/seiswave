@@ -28,3 +28,4 @@ seiswave/src_fortran/*.dylib
 
 test_files/
 
+PySeisSynth_backup_phase6/
