@@ -4,7 +4,7 @@
 [![Python Version](https://img.shields.io/pypi/pyversions/seiswave.svg)](https://pypi.org/project/seiswave/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**SeisWave** is a comprehensive Python framework for seismic surface wave forward modeling and dispersion inversion. It integrates native Python modeling algorithms alongside robust memory-bound Fortran extensions derived from Computer Programs in Seismology (CPS), offering researchers both flexibility and standard-compliant high-performance computations.
+**SeisWave** is a comprehensive Python framework for seismic surface wave forward modeling and dispersion inversion. By natively supporting **Full $f-c$ (Frequency-Phase Velocity) Spectrum Inversion**, it eliminates the need for manual, error-prone dispersion curve picking, making it highly robust to noise and seamlessly incorporating higher modes. It integrates native Python modeling algorithms alongside robust memory-bound Fortran extensions derived from Computer Programs in Seismology (CPS), offering researchers both flexibility and standard-compliant high-performance computations.
 
 ## Features
 
