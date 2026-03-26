@@ -19,12 +19,13 @@
 ## Methodological Details
 
 ### 1. Earth Model Parametrization
-To reduce the non-uniqueness of the inversion problem, `seiswave` only requires the user to invert for Layer Thicknesses ($H$) and S-wave velocities ($V_s$). The other dependent parameters are automatically derived using established empirical relationships:
-- **P-wave velocity ($V_p$)**: Computed from S-wave velocity assuming a default Poisson's ratio ($\nu = 0.40$):
-  $$V_p = V_s \sqrt{\frac{2(1-\nu)}{1-2\nu}}$$
-- **Density ($\rho$)**: Computed from P-wave velocity ($V_p$ in km/s) using the **Gardner relation**:
-  $$\rho = 1.74 \times V_p^{0.25} \quad \text{(in g/cm}^3\text{)}$$
-- **Quality Factors**: Assigned default constant attenuation values ($Q_p = 20.0$, $Q_s = 20.0$).
+To reduce the non-uniqueness of the inversion problem, `seiswave` only requires the user to invert for Layer Thicknesses ($H$) and S-wave velocities ($V_s$). The other dependent parameters are automatically derived using **Brocher's (2005)** empirical relationships (note: $V_s$ and $V_p$ are in km/s for these formulas):
+- **P-wave velocity ($V_p$)**: 
+  $$V_p = 0.9409 + 2.0947 V_s - 0.8206 V_s^2 + 0.2683 V_s^3 - 0.0251 V_s^4$$
+- **Density ($\rho$)**: Computed from P-wave velocity ($V_p$) in g/cm³:
+  $$\rho = 1.6612 V_p - 0.4721 V_p^2 + 0.0671 V_p^3 - 0.0043 V_p^4 + 0.000106 V_p^5$$
+- **Quality Factors ($Q_s, Q_p$)**: Estimated based on standard attenuation guidelines (with $V_s$ in m/s):
+  $$Q_s = \frac{V_s}{10.0}, \quad Q_p = 2.0 \times Q_s$$
 
 ### 2. Inversion Workflow
 The following flowchart illustrates the dispersion inversion process utilizing either the Differential Evolution (DE) or Markov Chain Monte Carlo (MCMC) algorithms:
