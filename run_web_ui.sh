@@ -1,14 +1,14 @@
 #!/bin/bash
 
 # run_web_ui.sh
-# Pintasan cepat untuk menjalankan PySeisSynth Web UI
+# Pintasan cepat untuk menjalankan SeisWave Web UI
 
 # Mendapatkan direktori tempat script ini berada
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 cd "$SCRIPT_DIR"
 
 echo "--------------------------------------------------------"
-echo "🌊 PySeisSynth Web UI Launcher"
+echo "🌊 SeisWave Web UI Launcher"
 echo "--------------------------------------------------------"
 
 # Path venv yang diharapkan
@@ -24,9 +24,6 @@ else
     exit 1
 fi
 
-# 2. Set PYTHONPATH agar modul PySeisSynth terbaca
-export PYTHONPATH=$PYTHONPATH:.
-
-# 3. Jalankan Streamlit
+# 2. Jalankan Streamlit lewat entrypoint package seiswave
 echo "🚀 Meluncurkan Aplikasi (Streamlit)..."
-streamlit run app.py
+seiswave-web

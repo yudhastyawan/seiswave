@@ -39,10 +39,19 @@ This will automatically open the Streamlit interface in your default web browser
 - 1D Earth Model Builder
 - Forward Modeling (f-c spectra and synthetic seismograms)
 - Dispersion Inversion (DE & MCMC approaches)
-- Real Field Data Processing (`.sgy` / `.segy`)
+- Real Field Data Processing (`.sgy` / `.segy` upload, Phase-Shift/slant-stack conversion to empirical `E_obs` matrix)
 - Full graphical diagnostics & CSV downloading capabilities.
 
-### 2. Using the Library in Python Scripts
+### 2. Processing Real Field Data (.sgy / .segy)
+To perform inversions on actual survey data, `seiswave` allows you to extract the observed energy spectrum (`E_obs`) from field seismograms:
+1. Navigate to the **Real Field Data Processing** tab in the Web UI.
+2. Ensure you have the offset geometry defined (either matching the `.sgy` trace headers or overridden manually).
+3. Specify your data sampling rate (`dt`).
+4. Upload your shot gather file (`.segy`, `.sgy`, or `.seg2`).
+5. Click **"Konversi f-c (Phase-Shift)"**. The system will transform the time-domain seismogram into a Frequency-Phase Velocity ($f-c$) matrix.
+6. This matrix is automatically cached into memory as the **"Observasi" (`E_obs`)** and is immediately ready to be inverted in the "Dispersion Inversion" tab.
+
+### 3. Using the Library in Python Scripts
 
 You can also use `seiswave` as regular Python modules for custom scripting and automation.
 

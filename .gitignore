@@ -25,3 +25,6 @@ seiswave/src_fortran/*.dylib
 # IDE
 .vscode/
 .idea/
+
+test_files/
+
