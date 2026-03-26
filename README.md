@@ -134,7 +134,11 @@ print(result.summary())
 ```
 
 ## Contributing
-Contributions are welcome! Please open an issue or submit a Pull Request on our GitHub repository.
+
+**Note on the Experimental Native Python Engine**: 
+The natively-written Python forward modeling engine (`engine='pyseissynth'`) is currently marked as **experimental**. Its generated synthetic seismograms and $f-c$ phase-velocity images do not yet fully match the benchmark outputs from our robust CPS routines. **We highly encourage and welcome contributions** from the community to help debug, validate, and align the native Python implementation with standard theoretical expectations!
+
+General contributions are also welcome! Please open an issue or submit a Pull Request on our GitHub repository.
 
 ## License
 Provided under the MIT License.
