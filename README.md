@@ -9,7 +9,8 @@
 ## Features
 
 - **Forward Modeling**: Generate synthetic seismograms and $f-c$ phase velocity dispersion images from 1D earth models.
-- **Dispersion Inversion**:
+- **Dispersion Inversion (Full $f-c$ Spectrum Approach)**:
+  Instead of relying on manual, error-prone dispersion curve picking, `seiswave` directly inverts the entire $f-c$ energy image. This preserves crucial amplitude variations, naturally incorporates higher modes without mathematical separation, and provides superior robustness against field data noise.
   - **Differential Evolution (DE)**: Fast global optimization for quick Earth model approximations.
   - **MCMC Bayesian Inference**: Comprehensive probabilistic inversion outputting Posterior distributions, credible intervals, and full acceptance-rejection & $\hat{R}$ diagnostics.
 - **CPS Fortran Integration**: Bypasses slow I/O `subprocess` calls by binding Fortran routines (like `sdisp96`, `sregn96`, `spulse96`) directly to Python memory space using `f2py`.
