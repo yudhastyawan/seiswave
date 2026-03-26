@@ -16,6 +16,8 @@ try:
 except ImportError:
     OBSPY_AVAILABLE = False
 
+from plotly.subplots import make_subplots
+
 # Menambahkan parent directory ke system path untuk akses modul seiswave
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
 
@@ -32,12 +34,21 @@ from seiswave import LayeredModel, compute_greens
 # =============================================================================
 # Streamlit App Configuration
 # =============================================================================
-st.set_page_config(
-    page_title="seiswave Web UI",
-    page_icon="🌊",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
+def main():
+    import sys
+    import os
+    file_path = os.path.abspath(__file__)
+    # Pass all arguments after the command to streamlit
+    args = " ".join(sys.argv[1:])
+    os.system(f"streamlit run {file_path} {args}")
+
+if __name__ == "__main__":
+    st.set_page_config(
+        page_title="seiswave Web UI",
+        page_icon="🌊",
+        layout="wide",
+        initial_sidebar_state="expanded"
+    )
 
 # Custom CSS
 st.markdown("""
@@ -675,7 +686,6 @@ elif page == "Dispersion Inversion":
                 f_arr = np.linspace(f_min, f_max, E_obs.shape[1])
                 c_arr = np.linspace(c_min, c_max, E_obs.shape[0])
                 
-                from plotly.subplots import make_subplots
                 fig_fc = make_subplots(rows=1, cols=3, subplot_titles=[
                     "Observasi", 
                     f"Median Model (Misfit: {misfit_med:.4f})", 

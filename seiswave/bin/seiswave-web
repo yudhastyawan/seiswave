@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 import os
 import sys
+import streamlit.web.cli as stcli
+import seiswave
 
 def main():
-    import streamlit.web.cli as stcli
-    from seiswave import web_app
-    file_path = os.path.abspath(web_app.__file__)
+    file_path = os.path.join(os.path.dirname(seiswave.__file__), "web_app.py")
     sys.argv = ["streamlit", "run", file_path]
     sys.exit(stcli.main())
 
