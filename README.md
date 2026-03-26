@@ -28,35 +28,56 @@ To reduce the non-uniqueness of the inversion problem, `seiswave` only requires 
   $$Q_s = \frac{V_s}{10.0}, \quad Q_p = 2.0 \times Q_s$$
 
 ### 2. Inversion Workflow
-The following flowchart illustrates the dispersion inversion process utilizing either the Differential Evolution (DE) or Markov Chain Monte Carlo (MCMC) algorithms:
+
+#### 2.1 Differential Evolution (DE) Global Optimization
+DE is a stochastic population-based algorithm used for rapidly searching the global parameter space to find an optimal approximate 1D Earth model.
 
 ```mermaid
 graph TD
-    A[Observed Data: E_obs] --> B(Initialize Search Bounds: H & Vs)
-    B --> C{Optimization Method}
+    A[Observed Data: f-c Spectrum E_obs] --> B[Initialize Population: H & Vs Bounds]
+    B --> C[Evaluate Initial Population L2 Misfit]
+    C --> D[Begin DE Iteration]
+    D --> E[Mutation: Create Donor Vectors]
+    E --> F[Crossover: Generate Trial Vectors]
+    F --> G[Forward Modeling: Synthetic f-c Spectrum]
+    G --> H[Calculate Trial L2 Misfit]
+    H --> I{Trial Misfit <= Target Misfit?}
+    I -- Yes --> J[Replace Target with Trial Vector]
+    I -- No --> K[Keep Target Vector]
+    J --> L{Max Iterations Reached or Converged?}
+    K --> L
+    L -- No --> D
+    L -- Yes --> M((Final Best 1D Earth Model))
     
-    C -->|Differential Evolution| D[Stochastic Mutation & Crossover]
-    C -->|MCMC| E[Random Walk / Proposal Distribution]
-    
-    D --> F[Generate Candidate 1D Earth Model]
-    E --> F
-    
-    F --> G[Forward Modeling: Generate Synthetic f-c Spectrum]
-    G --> H[Calculate L2 Misfit & Log Posterior]
-    
-    H --> I{Criteria Met / Accepted?}
-    I -- No --> D
-    I -- No --> E
-    
-    I -- Yes --> J[Store Model & Misfit]
-    J --> K{Max Iterations Reached?}
-    
-    K -- Yes --> L((Final Best Model / Posterior Distribution))
-    K -- No --> D
-    K -- No --> E
+    classDef process fill:#e1f5fe,stroke:#0288d1,stroke-width:2px;
+    class E,F,G,H process;
+```
 
-    classDef method fill:#f9f,stroke:#333,stroke-width:2px;
-    class D,E method;
+#### 2.2 Markov Chain Monte Carlo (MCMC) Bayesian Inversion
+MCMC provides a comprehensive probabilistic inversion. Instead of finding a single "best" model, it maps out the entire Posterior probability distribution to quantify uncertainty.
+
+```mermaid
+graph TD
+    A[Observed Data: f-c Spectrum E_obs] --> B[Initialize Markov Chains & Adaptive Step Sizes]
+    B --> C[Calculate Initial Log-Posterior]
+    C --> D[Begin MCMC Iteration]
+    D --> E[Propose Candidate: Random Walk Gaussian]
+    E --> F[Forward Modeling: Synthetic f-c Spectrum]
+    F --> G[Calculate Candidate Log-Posterior]
+    G --> H[Metropolis Hastings Acceptance Probability alpha]
+    H --> I{Random U_0,1 < alpha?}
+    I -- Yes --> J[Accept & Store Candidate Model]
+    I -- No --> K[Reject Candidate, Store Current Model]
+    J --> L[Update Adaptive Step Sizes]
+    K --> L
+    L --> M{Max Iterations Reached?}
+    M -- No --> D
+    M -- Yes --> N[Discard Burn-in & Apply Thinning]
+    N --> O[Check Gelman-Rubin Convergence R-hat]
+    O --> P((Posterior Distribution & MAP Model))
+    
+    classDef process fill:#e8f5e9,stroke:#388e3c,stroke-width:2px;
+    class E,F,G,H process;
 ```
 
 ## Installation
