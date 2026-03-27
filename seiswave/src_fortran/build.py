@@ -211,9 +211,9 @@ def build(script_dir):
         f"--f90exec={gfortran}",
     ]
 
-    # Windows-specific: link against static libs to avoid DLL issues
+    # Windows-specific: Use mingw32 for the C compiler wrappers
     if info['os'] == 'windows':
-        cmd.append("--link-lapack_opt")
+        cmd.append("--compiler=mingw32")
 
     print(f"  Command: {' '.join(cmd[:6])} ...")
     print()
