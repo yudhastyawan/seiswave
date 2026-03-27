@@ -1,7 +1,11 @@
 import os
 import subprocess
-from setuptools import setup, find_packages
+from setuptools import setup, find_packages, Distribution
 from setuptools.command.build_ext import build_ext
+
+class BinaryDistribution(Distribution):
+    def has_ext_modules(self):
+        return True
 
 class FortranBuildExt(build_ext):
     def run(self):
@@ -32,6 +36,7 @@ setup(
     cmdclass={
         'build_ext': FortranBuildExt,
     },
+    distclass=BinaryDistribution,
     # Ensure any built .so or .pyd files are included in the wheel package
     package_data={
         'seiswave': ['*.so', '*.pyd', 'src_fortran/*']
