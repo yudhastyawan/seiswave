@@ -219,6 +219,8 @@ def build(script_dir):
         with open(runner_path, "w") as f:
             f.write('''import sys, os
 os.environ["SETUPTOOLS_USE_DISTUTILS"] = "stdlib"
+
+# 1. Bypass distutils.cygwinccompiler ld version parse bug
 try:
     import distutils.cygwinccompiler
     orig_get_versions = distutils.cygwinccompiler.get_versions
@@ -229,6 +231,26 @@ try:
     distutils.cygwinccompiler.get_versions = patched_get_versions
 except Exception:
     pass
+
+# 2. Bypass numpy.distutils.mingw32ccompiler hardcoding 'gcc' string
+try:
+    import numpy.distutils.mingw32ccompiler
+    import distutils.ccompiler
+    orig_set_executables = distutils.ccompiler.CCompiler.set_executables
+    def patched_set_executables(self, **kwargs):
+        cc = os.environ.get("CC", "gcc")
+        cxx = os.environ.get("CXX", "g++")
+        for k, v in kwargs.items():
+            if type(v) is str:
+                if v.startswith("gcc"):
+                    kwargs[k] = v.replace("gcc", cc, 1)
+                elif v.startswith("g++"):
+                    kwargs[k] = v.replace("g++", cxx, 1)
+        orig_set_executables(self, **kwargs)
+    numpy.distutils.mingw32ccompiler.Mingw32CCompiler.set_executables = patched_set_executables
+except Exception:
+    pass
+
 import numpy.f2py
 sys.exit(numpy.f2py.main())
 ''')
