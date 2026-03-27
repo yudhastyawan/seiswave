@@ -34,13 +34,7 @@ from seiswave import LayeredModel, compute_greens
 # =============================================================================
 # Streamlit App Configuration
 # =============================================================================
-def main():
-    import sys
-    import os
-    file_path = os.path.abspath(__file__)
-    # Pass all arguments after the command to streamlit
-    args = " ".join(sys.argv[1:])
-    os.system(f"streamlit run {file_path} {args}")
+# (Launcher moved to cli.py)
 
 if __name__ == "__main__":
     st.set_page_config(
