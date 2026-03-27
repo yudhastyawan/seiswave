@@ -14,18 +14,17 @@ class FortranBuildExt(build_ext):
             print("Compiling Fortran extension using f2py...")
             subprocess.run(["python", "build.py"], cwd=fortran_dir, check=True)
             
-            # The .so/.pyd file is generated in src_fortran/build. 
-            # It needs to be moved/copied to the seiswave package root so it can be imported.
-            src_build_dir = os.path.join(fortran_dir, 'build')
             import glob
             import shutil
             
-            extensions = glob.glob(os.path.join(src_build_dir, 'cps_core*.so')) + \
-                         glob.glob(os.path.join(src_build_dir, 'cps_core*.pyd'))
+            extensions = glob.glob(os.path.join(fortran_dir, 'cps_core*.so')) + \
+                         glob.glob(os.path.join(fortran_dir, 'cps_core*.pyd'))
                          
-            target_dir = os.path.join(os.path.dirname(__file__), 'seiswave')
+            # Copied into the wheel's build lib so it gets packaged correctly
+            target_dir = os.path.join(self.build_lib, 'seiswave', 'src_fortran')
+            os.makedirs(target_dir, exist_ok=True)
             for ext in extensions:
-                print(f"Copying {ext} to {target_dir}")
+                print(f"Injecting {os.path.basename(ext)} into wheel payload -> {target_dir}")
                 shutil.copy(ext, target_dir)
                 
         super().run()
