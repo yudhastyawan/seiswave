@@ -115,21 +115,51 @@ def run_cps_forward(H, Vp, Vs, rho, Qp, Qs, forward_params):
 
                 print("berhasil menggunakan subprocess")
             
-            subprocess.run(["f96tosac", "-FMT", "2", "file96"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            
-            sac_files = sorted(glob.glob("*.ZVF"))
-            if not sac_files:
-                raise RuntimeError("CPS gagal men-_generate_ SAC files.")
-                
+            # Parsing file96 secara native ke dalam numpy arrays tanpa f96tosac (mengurangi dependensi eksternal)
+            # File96 merupakan format teks terstruktur:
+            # - 17 baris header utama
+            # - Setiap trace: 3 baris header + baris-baris data float (4 per baris)
             data_cps = np.zeros((npts, len(offsets)), dtype=np.float32)
-            for i, sacf in enumerate(sac_files):
-                if i >= len(offsets):
-                    break
-                st = obspy.read(sacf)
-                tr = st[0]
-                n_copy = min(npts, len(tr.data))
-                data_cps[:n_copy, i] = tr.data[:n_copy]
+            
+            if not os.path.exists("file96"):
+                raise RuntimeError("CPS gagal men-_generate_ file96.")
                 
+            with open("file96", "r") as f:
+                # 1. Skip 17 lines of main headers
+                for _ in range(17):
+                    f.readline()
+                
+                # 2. Read traces
+                for i in range(len(offsets)):
+                    comp_name = f.readline()
+                    if not comp_name:
+                        break # EOF
+                        
+                    hdr2 = f.readline().split()
+                    if len(hdr2) < 4:
+                        break
+                    
+                    try:
+                        tr_npts = int(hdr2[3])
+                    except ValueError:
+                        tr_npts = 0
+                        
+                    hdr3 = f.readline() # start time, diabaikan
+                    
+                    # Read time series data
+                    trace_data = []
+                    while len(trace_data) < tr_npts:
+                        line = f.readline()
+                        if not line:
+                            break
+                        trace_data.extend([float(v) for v in line.split()])
+                        
+                    if not trace_data:
+                        break
+                        
+                    n_copy = min(npts, len(trace_data))
+                    data_cps[:n_copy, i] = trace_data[:n_copy]
+                    
             return data_cps
             
         except subprocess.CalledProcessError as e:
