@@ -167,7 +167,7 @@ def build(script_dir):
 
     # Verify compiler architecture matches Python
     print()
-    print("Verifying compiler ↔ Python architecture match...")
+    print("Verifying compiler <-> Python architecture match...")
     try:
         result = subprocess.run([gfortran, "-dumpmachine"], capture_output=True, text=True, timeout=5)
         gcc_target = result.stdout.strip()
