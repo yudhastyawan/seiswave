@@ -218,7 +218,12 @@ def build(script_dir):
     print(f"  Command: {' '.join(cmd[:6])} ...")
     print()
 
-    result = subprocess.run(cmd, cwd=script_dir)
+    # Workaround for Python 3.11+ Windows where setuptools bundled distutils lacks msvccompiler
+    # which causes numpy.f2py to crash when it attempts to load all generic fcompilers.
+    env = os.environ.copy()
+    env["SETUPTOOLS_USE_DISTUTILS"] = "stdlib"
+
+    result = subprocess.run(cmd, cwd=script_dir, env=env)
 
     if result.returncode != 0:
         print()
