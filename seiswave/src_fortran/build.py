@@ -92,10 +92,13 @@ def find_gfortran(info):
         # MSYS2 / MinGW-w64 paths
         candidates += glob.glob("C:/msys64/mingw64/bin/gfortran.exe")
         candidates += glob.glob("C:/mingw64/bin/gfortran.exe")
-        # Conda-forge gfortran
+        # Conda-forge gfortran installs as x86_64-w64-mingw32-gfortran.exe
         if 'CONDA_PREFIX' in os.environ:
-            candidates.append(os.path.join(os.environ['CONDA_PREFIX'], 'Library', 'bin', 'gfortran.exe'))
+            conda_bin = os.path.join(os.environ['CONDA_PREFIX'], 'Library', 'bin')
+            candidates.append(os.path.join(conda_bin, 'gfortran.exe'))
+            candidates.append(os.path.join(conda_bin, 'x86_64-w64-mingw32-gfortran.exe'))
         candidates.append("gfortran")
+        candidates.append("x86_64-w64-mingw32-gfortran")
 
     # Test each candidate
     for fc in candidates:
