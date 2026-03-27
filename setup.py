@@ -27,7 +27,7 @@ class FortranBuildExt(build_ext):
         super().run()
 
 setup(
-    packages=find_packages(),
+    packages=find_packages(include=['seiswave', 'seiswave.*']),
     include_package_data=True,
     cmdclass={
         'build_ext': FortranBuildExt,
