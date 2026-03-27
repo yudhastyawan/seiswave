@@ -204,6 +204,17 @@ def build(script_dir):
     # Workaround for Python 3.11+ Windows where setuptools bundled distutils lacks msvccompiler,
     # and stdlib distutils fails to parse newer MinGW linker versions.
     if info['os'] == 'windows':
+        import shutil
+        py_ver = f"{sys.version_info.major}{sys.version_info.minor}"
+        mingw_lib = os.path.join(sys.base_prefix, "libs", f"libpython{py_ver}.a")
+        msvc_lib = os.path.join(sys.base_prefix, "libs", f"python{py_ver}.lib")
+        if not os.path.exists(mingw_lib) and os.path.exists(msvc_lib):
+            try:
+                print(f"  MinGW lib missing. Copying {os.path.basename(msvc_lib)} -> {os.path.basename(mingw_lib)} to bypass gendef requirement.")
+                shutil.copy(msvc_lib, mingw_lib)
+            except Exception as e:
+                print(f"  WARNING: Could not apply MinGW import library workaround: {e}")
+
         runner_path = os.path.join(script_dir, "run_f2py_patched.py")
         with open(runner_path, "w") as f:
             f.write('''import sys, os
