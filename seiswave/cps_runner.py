@@ -125,16 +125,17 @@ def run_cps_forward(H, Vp, Vs, rho, Qp, Qs, forward_params):
                 raise RuntimeError("CPS gagal men-_generate_ file96.")
                 
             with open("file96", "r") as f:
-                # 1. Skip 17 lines of main headers
-                for _ in range(17):
-                    f.readline()
-                
-                # 2. Read traces continuously until EOF
                 offset_idx = 0
                 while True:
                     comp_name = f.readline()
                     if not comp_name:
                         break # EOF
+                        
+                    if comp_name.startswith("FILE"):
+                        # Ditemukan blok header utama baru (17 baris total). Skip sisa 16 baris.
+                        for _ in range(16):
+                            f.readline()
+                        continue
                         
                     hdr2 = f.readline().split()
                     if len(hdr2) < 4:
