@@ -16,6 +16,37 @@
 - **CPS Fortran Integration**: Bypasses slow I/O `subprocess` calls by binding Fortran routines (like `sdisp96`, `sregn96`, `spulse96`) directly to Python memory space using `f2py`.
 - **Interactive Web UI**: A fully-featured modern Streamlit interface seamlessly bundled with the package, eliminating the need to write Python scripts for standard analysis workflows.
 
+## Installation
+
+As this package automatically compiles high-performance Fortran extensions (`f2py`), you must have a Fortran compiler installed. The most reliable and cross-platform way to install `seiswave` is by using a `conda` environment.
+
+### Using Conda (Windows, macOS, & Linux)
+
+First, create a fresh Python environment and install the required compiler tools (`m2w64-toolchain` for Windows, or `gfortran` for Unix):
+
+**Windows:**
+```bash
+conda create -n seiswave python=3.11
+conda activate seiswave
+conda install conda-forge::gfortran_win-64 # Installs MinGW gfortran
+pip install seiswave
+```
+
+**macOS / Linux:**
+```bash
+conda create -n seiswave python=3.11
+conda activate seiswave
+conda install -c conda-forge gfortran
+pip install seiswave
+```
+
+### Quick Launch
+
+```bash
+seiswave-web
+```
+*(Note: If Streamlit prompts you for an email address upon the first launch, simply **leave it blank** and press Enter.)*
+
 ## Methodological Details
 
 ### 1. Earth Model Parametrization
@@ -80,30 +111,6 @@ graph TD
     class E,F,G,H process;
 ```
 
-## Installation
-
-As this package automatically compiles high-performance Fortran extensions (`f2py`), you must have a Fortran compiler installed. The most reliable and cross-platform way to install `seiswave` is by using a `conda` environment.
-
-### Using Conda (Windows, macOS, & Linux)
-
-First, create a fresh Python environment and install the required compiler tools (`m2w64-toolchain` for Windows, or `gfortran` for Unix):
-
-**Windows:**
-```bash
-conda create -n seiswave python=3.11
-conda activate seiswave
-conda install -c msys2 m2w64-toolchain   # Installs MinGW gfortran
-pip install seiswave
-```
-
-**macOS / Linux:**
-```bash
-conda create -n seiswave python=3.11
-conda activate seiswave
-conda install -c conda-forge gfortran
-pip install seiswave
-```
-
 ## Usage
 
 ### 1. The Interactive Web UI (Recommended)
@@ -119,10 +126,10 @@ This will automatically open the Streamlit interface in your default web browser
 - 1D Earth Model Builder
 - Forward Modeling (f-c spectra and synthetic seismograms)
 - Dispersion Inversion (DE & MCMC approaches)
-- Real Field Data Processing (`.sgy` / `.segy` upload, Phase-Shift/slant-stack conversion to empirical `E_obs` matrix)
+- Real Field Data Processing (`.seg2` / `.sgy` / `.segy` upload, Phase-Shift/slant-stack conversion to empirical `E_obs` matrix)
 - Full graphical diagnostics & CSV downloading capabilities.
 
-### 2. Processing Real Field Data (.sgy / .segy)
+### 2. Processing Real Field Data (.seg2 / .sgy / .segy)
 To perform inversions on actual survey data, `seiswave` allows you to extract the observed energy spectrum (`E_obs`) from field seismograms:
 1. Navigate to the **Real Field Data Processing** tab in the Web UI.
 2. Ensure you have the offset geometry defined (either matching the `.sgy` trace headers or overridden manually).
