@@ -9,8 +9,18 @@ except ImportError:
     pass
 
 def check_cps_installed():
-    """Periksa lokasi / instalasi CPS"""
+    """Periksa lokasi / instalasi CPS melalui native extension atau system PATH"""
     import shutil
+    import os
+    import glob
+    
+    # 1. Periksa native extension (F2PY FWF)
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    src_dir = os.path.join(base_dir, "src_fortran")
+    if glob.glob(os.path.join(src_dir, "cps_core*.so")) or glob.glob(os.path.join(src_dir, "cps_core*.pyd")):
+        return True
+        
+    # 2. Periksa fallback subprocess system
     return shutil.which('sprep96') is not None
 
 def write_cps_model(filename, H, Vp, Vs, rho, Qp, Qs, nmodes=100):
