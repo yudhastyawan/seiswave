@@ -82,23 +82,38 @@ graph TD
 
 ## Installation
 
-You can install `seiswave` directly from PyPI.
+As this package automatically compiles high-performance Fortran extensions (`f2py`), you must have a Fortran compiler installed. The most reliable and cross-platform way to install `seiswave` is by using a `conda` environment.
 
+### Using Conda (Windows, macOS, & Linux)
+
+First, create a fresh Python environment and install the required compiler tools (`m2w64-toolchain` for Windows, or `gfortran` for Unix):
+
+**Windows:**
 ```bash
+conda create -n seiswave python=3.11
+conda activate seiswave
+conda install -c msys2 m2w64-toolchain   # Installs MinGW gfortran
 pip install seiswave
 ```
 
-*Note: As this package automatically compiles high-performance Fortran extensions, you will need a Fortran compiler (such as `gfortran`) installed on your system during installation.*
+**macOS / Linux:**
+```bash
+conda create -n seiswave python=3.11
+conda activate seiswave
+conda install -c conda-forge gfortran
+pip install seiswave
+```
 
 ## Usage
 
 ### 1. The Interactive Web UI (Recommended)
 
-After installing the package via `pip`, you can instantly launch the interactive web application from your terminal:
+After installing the package, you can instantly launch the interactive web application from your terminal:
 
 ```bash
 seiswave-web
 ```
+*(Note: If Streamlit prompts you for an email address upon the first launch, simply **leave it blank** and press Enter.)*
 
 This will automatically open the Streamlit interface in your default web browser, giving you access to:
 - 1D Earth Model Builder
