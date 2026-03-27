@@ -11,14 +11,13 @@ except ImportError:
 def check_cps_installed():
     """Periksa lokasi / instalasi CPS melalui native extension atau system PATH"""
     import shutil
-    import os
-    import glob
     
     # 1. Periksa native extension (F2PY FWF)
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    src_dir = os.path.join(base_dir, "src_fortran")
-    if glob.glob(os.path.join(src_dir, "cps_core*.so")) or glob.glob(os.path.join(src_dir, "cps_core*.pyd")):
+    try:
+        from .src_fortran import cps_core
         return True
+    except ImportError:
+        pass
         
     # 2. Periksa fallback subprocess system
     return shutil.which('sprep96') is not None
@@ -77,25 +76,7 @@ def run_cps_forward(H, Vp, Vs, rho, Qp, Qs, forward_params):
             write_cps_dfile(dfile_path, offsets, dt, npts)
             
             try:
-                import sys
-                import importlib.util
-                import platform as _plat
-                # Cari extension (.so di Unix, .pyd di Windows) secara dinamis
-                base_dir = os.path.dirname(os.path.abspath(__file__))
-                src_dir = os.path.join(base_dir, "src_fortran")
-                mod_path = (
-                    glob.glob(os.path.join(src_dir, "cps_core*.so")) +
-                    glob.glob(os.path.join(src_dir, "cps_core*.pyd"))
-                )
-                if not mod_path:
-                    _ext = '.pyd' if _plat.system() == 'Windows' else '.so'
-                    raise ImportError(
-                        f"cps_core{_ext} tidak ditemukan di {src_dir}. "
-                        f"Jalankan: python seiswave/src_fortran/build.py"
-                    )
-                spec = importlib.util.spec_from_file_location("cps_core", mod_path[0])
-                cps_core = importlib.util.module_from_spec(spec)
-                spec.loader.exec_module(cps_core)
+                from .src_fortran import cps_core
                 
                 def run_native_stage(name, args):
                     # F2PY enforces dimension(50), pad
