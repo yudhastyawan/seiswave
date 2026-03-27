@@ -260,21 +260,13 @@ sys.exit(numpy.f2py.main())
         if not shutil.which("gcc"):
             mingw_gcc = shutil.which("x86_64-w64-mingw32-gcc")
             if mingw_gcc:
-                fake_bin = os.path.join(script_dir, "fake_bin")
-                os.makedirs(fake_bin, exist_ok=True)
-                fake_gcc = os.path.join(fake_bin, "gcc.exe")
-                if not os.path.exists(fake_gcc):
-                    shutil.copy(mingw_gcc, fake_gcc)
+                env["CC"] = mingw_gcc
+                print(f"  Set CC={mingw_gcc} to bypass distutils hardcodes")
                 
-                if not shutil.which("g++"):
-                    mingw_gpp = shutil.which("x86_64-w64-mingw32-g++")
-                    if mingw_gpp:
-                        fake_gpp = os.path.join(fake_bin, "g++.exe")
-                        if not os.path.exists(fake_gpp):
-                            shutil.copy(mingw_gpp, fake_gpp)
-                            
-                print(f"  Created gcc alias in {fake_bin} to bypass numpy.distutils hardcodes")
-                env["PATH"] = f"{fake_bin}{os.pathsep}{env.get('PATH', '')}"
+                mingw_gpp = shutil.which("x86_64-w64-mingw32-g++")
+                if mingw_gpp:
+                    env["CXX"] = mingw_gpp
+                    print(f"  Set CXX={mingw_gpp}")
 
     result = subprocess.run(cmd, cwd=script_dir, env=env)
 
