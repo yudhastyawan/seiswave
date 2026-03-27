@@ -129,8 +129,9 @@ def run_cps_forward(H, Vp, Vs, rho, Qp, Qs, forward_params):
                 for _ in range(17):
                     f.readline()
                 
-                # 2. Read traces
-                for i in range(len(offsets)):
+                # 2. Read traces continuously until EOF
+                offset_idx = 0
+                while True:
                     comp_name = f.readline()
                     if not comp_name:
                         break # EOF
@@ -152,13 +153,28 @@ def run_cps_forward(H, Vp, Vs, rho, Qp, Qs, forward_params):
                         line = f.readline()
                         if not line:
                             break
-                        trace_data.extend([float(v) for v in line.split()])
+                        
+                        # Robust Fortran float parsing (handles missing 'E' for exponentials >= 100)
+                        for v in line.split():
+                            s = v.upper().replace('D', 'E')
+                            if 'E' not in s:
+                                idx = max(s.rfind('+'), s.rfind('-'))
+                                if idx > 0:  # Not the leading sign
+                                    s = s[:idx] + 'E' + s[idx:]
+                            try:
+                                trace_data.append(float(s))
+                            except ValueError:
+                                trace_data.append(0.0)
                         
                     if not trace_data:
                         break
                         
-                    n_copy = min(npts, len(trace_data))
-                    data_cps[:n_copy, i] = trace_data[:n_copy]
+                    # Hanya ambil komponen vertikal (ZVF)
+                    if "ZVF" in comp_name:
+                        if offset_idx < len(offsets):
+                            n_copy = min(npts, len(trace_data))
+                            data_cps[:n_copy, offset_idx] = trace_data[:n_copy]
+                            offset_idx += 1
                     
             return data_cps
             
