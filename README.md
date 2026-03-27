@@ -47,6 +47,26 @@ seiswave-web
 ```
 *(Note: If Streamlit prompts you for an email address upon the first launch, simply **leave it blank** and press Enter.)*
 
+## Gallery
+
+### MCMC Inversion Process snapshots
+![MCMC Inversion Process (Part 1)](https://i.imgur.com/lKNDypU.png)
+*MCMC Inversion Process (Part 1)*
+
+![MCMC Inversion Process (Part 2)](https://i.imgur.com/mbnNZeV.png)
+*MCMC Inversion Process (Part 2)*
+
+### Statistical Diagnostics
+![Log-Posterior and L2 Misfit curves](https://i.imgur.com/nOuyjEK.png)
+*Log-Posterior and L2 Misfit curves for all chains in MCMC*
+
+![MCMC Inversion results statistics](https://i.imgur.com/xyIQkn4.png)
+*MCMC Inversion results statistics*
+
+### Result Comparisons
+![f-c Spectrum Comparison](https://i.imgur.com/5zN9khK.png)
+*Comparison between Observed, Median, and MAP f-c spectra*
+
 ## Methodological Details
 
 ### 1. Earth Model Parametrization
