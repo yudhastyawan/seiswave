@@ -282,11 +282,13 @@ sys.exit(numpy.f2py.main())
         if not shutil.which("gcc"):
             mingw_gcc = shutil.which("x86_64-w64-mingw32-gcc")
             if mingw_gcc:
+                mingw_gcc = mingw_gcc.replace("\\", "/")
                 env["CC"] = mingw_gcc
                 print(f"  Set CC={mingw_gcc} to bypass distutils hardcodes")
                 
                 mingw_gpp = shutil.which("x86_64-w64-mingw32-g++")
                 if mingw_gpp:
+                    mingw_gpp = mingw_gpp.replace("\\", "/")
                     env["CXX"] = mingw_gpp
                     print(f"  Set CXX={mingw_gpp}")
 
