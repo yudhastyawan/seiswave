@@ -200,10 +200,32 @@ def build(script_dir):
     # Build command
     print()
     print("Building extension...")
-    cmd = [
-        sys.executable, "-m", "numpy.f2py",
-        "-c", PYF_FILE,
-    ] + FORTRAN_SOURCES + [
+    
+    # Workaround for Python 3.11+ Windows where setuptools bundled distutils lacks msvccompiler,
+    # and stdlib distutils fails to parse newer MinGW linker versions.
+    if info['os'] == 'windows':
+        runner_path = os.path.join(script_dir, "run_f2py_patched.py")
+        with open(runner_path, "w") as f:
+            f.write('''import sys, os
+os.environ["SETUPTOOLS_USE_DISTUTILS"] = "stdlib"
+try:
+    import distutils.cygwinccompiler
+    orig_get_versions = distutils.cygwinccompiler.get_versions
+    def patched_get_versions():
+        res = orig_get_versions()
+        res = tuple((x if x is not None else "2.30.0") for x in res)
+        return res
+    distutils.cygwinccompiler.get_versions = patched_get_versions
+except Exception:
+    pass
+import numpy.f2py
+sys.exit(numpy.f2py.main())
+''')
+        cmd = [sys.executable, runner_path, "-c", PYF_FILE]
+    else:
+        cmd = [sys.executable, "-m", "numpy.f2py", "-c", PYF_FILE]
+
+    cmd += FORTRAN_SOURCES + [
         "-m", MODULE_NAME,
         f"--f77flags={F77_FLAGS}",
         "--fcompiler=gnu95",
@@ -218,10 +240,9 @@ def build(script_dir):
     print(f"  Command: {' '.join(cmd[:6])} ...")
     print()
 
-    # Workaround for Python 3.11+ Windows where setuptools bundled distutils lacks msvccompiler
-    # which causes numpy.f2py to crash when it attempts to load all generic fcompilers.
     env = os.environ.copy()
-    env["SETUPTOOLS_USE_DISTUTILS"] = "stdlib"
+    if info['os'] != 'windows':
+        env["SETUPTOOLS_USE_DISTUTILS"] = "stdlib"
 
     result = subprocess.run(cmd, cwd=script_dir, env=env)
 
