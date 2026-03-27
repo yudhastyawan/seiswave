@@ -241,8 +241,7 @@ sys.exit(numpy.f2py.main())
     print()
 
     env = os.environ.copy()
-    if info['os'] != 'windows':
-        env["SETUPTOOLS_USE_DISTUTILS"] = "stdlib"
+    env["SETUPTOOLS_USE_DISTUTILS"] = "stdlib"
 
     result = subprocess.run(cmd, cwd=script_dir, env=env)
 
