@@ -311,7 +311,7 @@ sys.exit(numpy.f2py.main())
     if built_files:
         for bf in built_files:
             size_kb = os.path.getsize(bf) / 1024
-            print(f"  ✅ {os.path.basename(bf)} ({size_kb:.0f} KB)")
+            print(f"  [OK] {os.path.basename(bf)} ({size_kb:.0f} KB)")
         print()
         print("BUILD SUCCESSFUL!")
     else:
